@@ -42,13 +42,13 @@ val five_levels_tree = node {value=1,
 					}
 			    };			    
 
-val test_tree_height_1 = tree_height i_tree = 1;
-val test_tree_height_2 = tree_height two_levels_tree = 2;
-val test_tree_height_3 = tree_height five_levels_tree = 5;
+val test_tree_height_1 = tree_height i_tree = 0;
+val test_tree_height_2 = tree_height two_levels_tree = 1;
+val test_tree_height_3 = tree_height five_levels_tree = 4;
 
-val test_tree_sum_1 = tree_sum i_tree = 0;
-val test_tree_sum_2 = tree_sum two_levels_tree = 1;
-val test_tree_sum_3 = tree_sum five_levels_tree = 10;
+val test_tree_sum_1 = sum_tree i_tree = 0;
+val test_tree_sum_2 = sum_tree two_levels_tree = 1;
+val test_tree_sum_3 = sum_tree five_levels_tree = 10;
 
 val test_less_than_1 = less_than (int_to_nat 0, int_to_nat 10) = true;
 val test_less_than_2 = less_than (int_to_nat 0, int_to_nat 0) = false;
@@ -78,8 +78,7 @@ val test_pred_2 = pred (SUCC ZERO) = ZERO;
 val test_is_positive_1 = is_positive ZERO = false;
 val test_is_positive_2 = is_positive (SUCC ZERO) = true;
 
-val test_gardener_1 = gardener flag_tree_1 = flag_tree_1;
-val test_gardener_2 = gardener flag_tree_2 = node {value=leave_me_alone, left=leaf, right=leaf};
+val test_gardener_1 = gardener (node { value = leave_me_alone, left = node { value = prune_me, left = node { value = leave_me_alone, left = leaf, right = leaf }, right = leaf }, right = node { value = leave_me_alone, left = leaf, right = leaf } }) = node { value = leave_me_alone, left = leaf, right = node { value = leave_me_alone, left = leaf, right = leaf } }
 
 val lst_contains_test_1 = list_contains ([1,2,3,4], 4) = true;
 val lst_contains_test_2 = list_contains ([], 4) = false;
@@ -115,6 +114,6 @@ val test_is_empty_2 = isEmpty (Union (Elems [1,2,3], Range {from=1, to=4})) = fa
 val test_is_empty_3 = isEmpty (Intersection (Range {from=1, to=10}, Range {from=11, to=20})) = true;
 val test_is_empty_4 = isEmpty(Union (Intersection (Range {from=1, to=10}, Elems [5]), Elems [23, 33])) = false;
 
-val test_contains_1 = contains (Range {from=0, to=10}) 10 = true;
-val test_contains_2 = contains (Elems []) 1 = false;
-val test_contains_3 = contains (Union (Range {from=1, to=10}, Elems[11])) 11 = true;
+val test_contains_1 = contains ((Range {from=0, to=10}), 10) = true;
+val test_contains_2 = contains ((Elems []), 1) = false;
+val test_contains_3 = contains ((Union (Range {from=1, to=10}, Elems[11])), 11) = true;
