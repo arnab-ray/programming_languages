@@ -110,9 +110,10 @@ fun score (cards, goal) =
 fun officiate (cards, moves, goal) =
     let fun helper e =
             case e of
-                 ([], _, held) => score (held, goal)
+                 ([], Draw::moves, held) => score (held, goal)
                | (_, [], held) => score (held, goal)
-               | (cards, (Discard card)::moves, held) => helper (cards, moves, remove_card (cards, card, IllegalMove))
+               | (cards, (Discard card)::moves, held) => 
+                   helper (cards, moves, remove_card (held, card, IllegalMove))
                | (card::cards, Draw::moves, held) =>
                    let val curr_held = card::held
                        val sum = sum_cards (curr_held)
@@ -149,9 +150,10 @@ fun score_challenge (cards, goal) =
 fun officiate_challenge (cards, moves, goal) =
     let fun helper e =
             case e of
-                 ([], _, held) => score_challenge (held, goal)
+                 ([], Draw::moves, held) => score_challenge (held, goal)
                | (_, [], held) => score_challenge (held, goal)
-               | (cards, (Discard card)::moves, held) => helper (cards, moves, remove_card (cards, card, IllegalMove))
+               | (cards, (Discard card)::moves, held) => 
+                   helper (cards, moves, remove_card (held, card, IllegalMove))
                | (card::cards, Draw::moves, held) =>
                    let val curr_held = card::held
                        val sum = sum_cards (curr_held)
@@ -165,11 +167,3 @@ fun officiate_challenge (cards, moves, goal) =
       helper (cards, moves, [])
     end
 
-(*fun careful_player (cards, goal) =
-    let fun helper (cards, score, acc) =
-            case cards of
-                 [] => acc
-               | x::x' => 
-    in
-      helper (cards, goal, [])
-    end*)
