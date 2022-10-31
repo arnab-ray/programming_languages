@@ -47,15 +47,8 @@ fun longest_string2 (strs : string list) =
 fun longest_capitalized (strs : string list) =
     (longest_string1 o only_capitals) strs
 
-fun longest_string_helper predicate xs = 
-  case xs of
-       [] => ""
-    | x::[] => x
-    | x::x' => 
-        let val highest_tail = longest_string_helper predicate x'
-        in
-          if predicate (String.size x, String.size highest_tail) then x else highest_tail
-        end
+fun longest_string_helper predicate xs =
+    List.foldl (fn (x, y) => if predicate (x, y) then x else y) "" strs
 
 fun longest_string3 (strs : string list) =
     longest_string_helper (fn (x,y) => x >= y) strs
@@ -84,5 +77,53 @@ fun all_answers f xs =
       helper ([], xs)
     end
 
-(*fun count_wildcards p =*)
-    
+fun count_wildcards p = g (fn () => 1) (fn x => 0) p 
+
+fun count_wild_and_variable_lengths p = g (fn () => 1) (fn x => String.size x) p
+
+fun count_some_var (s, p) = g (fn () => 0) (fn x => if x = s then 1 else 0) p
+
+fun check_pat p =
+    let fun get_strings (x) =
+            case x of
+                 Variable b => [b]
+              | TupleP ps => List.foldl (fn (x, y) => (get_strings x) @ y) [] ps
+              | ConstructorP(_, x) => get_strings x
+              | _ => []
+        fun has_repeat xs =
+            case xs of
+                 [] => false
+              | x::x' => (List.exists (fn y => x = y) x') orelse (has_repeat x')
+    in
+      not (has_repeat (get_strings p))
+    end
+
+fun match (v : valu, p : pattern) =
+    case p of
+         Wildcard => SOME []
+       | Variable s => SOME [(s, v)]
+       | UnitP => 
+           (case v of
+                 Unit => SOME []
+              | _ => NONE
+           )
+       | ConstP i => 
+           (case v of
+                 Const u => if i = u then SOME [] else NONE
+              | _ => NONE
+           )
+       | TupleP ps => 
+           (case v of
+                 Tuple vs => if List.length ps = List.length vs 
+                             then all_answers match (ListPair.zip (vs, ps)) 
+                             else NONE
+              | _ => NONE
+           )
+       | ConstructorP (s1, ps) => 
+           (case v of
+                 Constructor(s2, vs) => if s1 = s2 then match (vs, ps) else NONE
+              | _ => NONE
+           )
+
+fun first_match (v, ps) =
+    SOME (first_answer (fn p => match (v, p)) ps) handle NoAnswer => NONE
