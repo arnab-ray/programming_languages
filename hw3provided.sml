@@ -47,5 +47,42 @@ fun longest_string2 (strs : string list) =
 fun longest_capitalized (strs : string list) =
     (longest_string1 o only_capitals) strs
 
+fun longest_string_helper predicate xs = 
+  case xs of
+       [] => ""
+    | x::[] => x
+    | x::x' => 
+        let val highest_tail = longest_string_helper predicate x'
+        in
+          if predicate (String.size x, String.size highest_tail) then x else highest_tail
+        end
+
+fun longest_string3 (strs : string list) =
+    longest_string_helper (fn (x,y) => x >= y) strs
+
+fun longest_string4 (strs : string list) =
+    longest_string_helper (fn (x,y) => x > y) strs
+
 fun rev_string (str : string) =
     (String.implode o List.rev o String.explode) str
+
+fun first_answer f xs =
+    case xs of
+         [] => raise NoAnswer
+      | x::x' => case f x of
+                      SOME v => v
+                    | _ => first_answer f x'
+
+fun all_answers f xs =
+    let fun helper (acc, ys) =
+            case ys of
+                 [] => SOME acc
+               | y::y' => case f y of
+                               NONE => NONE
+                             | SOME v => helper (v @ acc, y')
+    in
+      helper ([], xs)
+    end
+
+(*fun count_wildcards p =*)
+    
