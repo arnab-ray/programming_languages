@@ -46,3 +46,38 @@
 (define (cycle-lists xs ys)
   (letrec ([f (lambda (x) (cons (cons (list-nth-mod xs x) (list-nth-mod ys x)) (lambda () (f (+ x 1)))))])
     (lambda () (f 0))))
+
+(define (vector-assoc v vec)
+  (letrec ([n (vector-length vec)]
+           [f (lambda (pos)
+                (cond [(>= pos n) #f]
+                      [(and (pair? (vector-ref vec pos)) (= (car (vector-ref vec pos)) v) (vector-ref vec pos))]
+                      [#t (f (+ 1 pos))]))])
+    (f 0)))
+
+
+
+(define (cached-assoc xs n)
+  (letrec ([cache (make-vector n)]
+           [available-loc 0]
+           [f (lambda (v)
+                (let ([cached-val (vector-assoc v cache)])
+                  (if cached-val
+                      cached-val
+                      (let ([val (assoc v xs)])
+                        (if val
+                            (begin
+                              (vector-set! cache available-loc val)
+                              (set! available-loc (remainder (+ 1 available-loc) n))
+                              val)
+                            val)))))])
+    f))
+
+(define-syntax while-less
+  (syntax-rules (do)
+    [(while-less e1 do e2)
+     (letrec ([f (lambda()
+                   (cond [(>= e2 e1) #t]
+                         [#t (f)]))])
+       (f))]))
+                
