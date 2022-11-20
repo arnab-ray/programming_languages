@@ -75,9 +75,12 @@
 
 (define-syntax while-less
   (syntax-rules (do)
-    [(while-less e1 do e2)
-     (letrec ([f (lambda()
-                   (cond [(>= e2 e1) #t]
-                         [#t (f)]))])
-       (f))]))
+    ((while-less x do y)
+      (let ([z x])
+        (letrec ([loop (lambda ()
+                         (let ([w y])
+                           (if (or (not (number? w)) (>= w z))
+                               #t
+                               (loop))))])
+          (loop))))))
                 
