@@ -44,17 +44,17 @@ fun longest_string1 (strs : string list) =
 fun longest_string2 (strs : string list) =
     List.foldl (fn (x, y) => if (String.size y) > (String.size x) then y else x) "" strs
 
-fun longest_capitalized (strs : string list) =
-    (longest_string1 o only_capitals) strs
-
 fun longest_string_helper predicate xs =
-    List.foldl (fn (x, y) => if predicate (x, y) then x else y) "" strs
+    List.foldl (fn (x, y) => if predicate (x, y) then x else y) "" xs
 
 fun longest_string3 (strs : string list) =
     longest_string_helper (fn (x,y) => x >= y) strs
 
 fun longest_string4 (strs : string list) =
     longest_string_helper (fn (x,y) => x > y) strs
+
+fun longest_capitalized (strs : string list) =
+    (longest_string1 o only_capitals) strs
 
 fun rev_string (str : string) =
     (String.implode o List.rev o String.explode) str
@@ -125,5 +125,5 @@ fun match (v : valu, p : pattern) =
               | _ => NONE
            )
 
-fun first_match (v, ps) =
+fun first_match v ps =
     SOME (first_answer (fn p => match (v, p)) ps) handle NoAnswer => NONE
